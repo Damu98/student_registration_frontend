@@ -1,0 +1,51 @@
+/* form.css */
+
+.registration-page {
+  background-color: #f0f0f0; /* Your desired background color */
+  padding: 20px; /* Optional: Add padding for spacing */
+}
+
+/* Style for the outer container */
+.outer-page-content-container {
+  margin: 20px;
+}
+
+/* Style for the form title */
+.page-titlespacing {
+  margin-bottom: 20px;
+}
+
+/* Style for the form fields */
+.form-control {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* Style for the error messages */
+.text-error {
+  color: red;
+}
+
+/* Style for the radio buttons */
+.radio-inline {
+  margin-right: 10px;
+}
+
+/* Style for the submit button */
+button[type="submit"] {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button[type="submit"]:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
