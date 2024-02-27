@@ -1,184 +1,182 @@
+import { useFormik, Form, FormikProvider, FieldArray } from 'formik';
+import { Table, Button } from 'react-bootstrap';
 import axios from 'axios';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import React from 'react';
-import * as bie from 'react-bootstrap';
 
 export default function StudentRegistrationForm() {
+    const initialValues = {
+        students: [{
+            studentName: '',
+            fatherName: '',
+            motherName: '',
+            gender: '',
+            caste: '',
+            religion: '',
+            address: '',
+            qualifications: []  // To hold multiple qualifications
+        }]
+    };
+
+    const handleSubmit = async (values, { setSubmitting }) => {
+        console.log(values);
+        try {
+            const response = await axios.post('http://localhost:9090/students/addStudent', values);
+            if (response.data?.scode === '01') {
+                const data = response.data; // Assuming response.data is an object
+                formik.setFieldValue("studentName", data.studentName);
+                formik.setFieldValue("fatherName", data.fatherName);
+                formik.setFieldValue("motherName", data.motherName);
+                formik.setFieldValue("gender", data.gender);
+                formik.setFieldValue("caste", data.caste);
+                formik.setFieldValue("religion", data.religion);
+                formik.setFieldValue("address", data.address);
+                formik.setFieldValue("qualifications", data.qualifications); // Adjust accordingly
+                
+                alert('Successfully submitted');
+            } else if (response.data?.scode === '02') {
+                alert('No Data Found');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while submitting the form.');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+    
+    const formik = useFormik({
+        initialValues,
+        onSubmit: handleSubmit
+    });
+
     return (
-        <div className="registration-page"> {/* Add class name to the outer div */}
-            <Formik
-                initialValues={{
-                    studentName: '',
-                    fatherName: '',
-                    motherName: '',
-                    gender: '',
-                    caste: '',
-                    religion: '',
-                    address: '',
-                    qualification1: false,
-                    qualification2: false,
-                    qualification3: false,
-                }}
-                onSubmit={(values, { setSubmitting }) => {
-                    const formData = {
-                        ...values,
-                        qualification1: values.qualification1 ? 'SSC' : '',
-                        qualification2: values.qualification2 ? 'INTER' : '',
-                        qualification3: values.qualification3 ? 'DEGREE' : '',
-                    };
-
-                    axios
-                        .post('http://localhost:9090/students/addStudent', formData)
-                        .then((res) => {
-                            if (res.data?.scode === '01') {
-                                alert('Successfully submitted');
-                            } else if (res.data?.scode === '02') {
-                                alert('No Data Found');
-                            }
-                            setSubmitting(false);
-                        })
-                        .catch((error) => {
-                            console.error('Error:', error);
-                            alert('An error occurred while submitting the form.');
-                            setSubmitting(false);
-                        });
-                }}
-            >
-                {({ isSubmitting }) => (
-                    <Form>
-                        <bie.Container className="outer-page-content-container">
-                            <bie.Row>
-                                <bie.Col xs={12} sm={12} md={12} lg={12} xl={12} xxl={12}>
-                                    <div className="page-titlespacing inner-herbpage-service-title1">
-                                        <h1 style={{ color: '#0352fc' }}>Student Registration Form</h1>
-                                    </div>
-                                </bie.Col>
-                            </bie.Row>
-
-                            <bie.Row>
-                                <bie.Col xs={12} sm={12} md={12} lg={8} xl={2} xxl={2}>
-                                    <span className="text-danger">
-                                        *<b>Student Name:</b>
-                                    </span>
-                                    <Field type="text" name="studentName" className="form-control" />
-                                </bie.Col>
-                            </bie.Row>
-
-                            <bie.Row className="px-5 pt-2">
-                                <bie.Col xs={12} sm={12} md={12} lg={8} xl={2} xxl={2}>
-                                    <span className="text-danger">
-                                        *<b>Father Name:</b>
-                                    </span>
-                                    <Field type="text" name="fatherName" className="form-control" />
-                                    <ErrorMessage name="fatherName" component="div" className="text-error" />
-                                </bie.Col>
-                            </bie.Row>
-
-                            <bie.Row>
-                                <bie.Col xs={12} sm={12} md={12} lg={8} xl={2} xxl={2}>
-                                    <span className="text-danger">
-                                        *<b>Mother Name:</b>
-                                    </span>
-                                    <Field type="text" name="motherName" className="form-control" />
-                                </bie.Col>
-                            </bie.Row>
-
-                            <bie.Row className="px-5 pt-2 align-items-center">
-                                <bie.Col xs={12} sm={12} md={12} lg={8} xl={2} xxl={2}>
-                                    <span className="text-danger">
-                                        *<b>Gender:</b>
-                                    </span>
-                                    <div>
-                                        <label className="radio-inline mr-3">
-                                            <Field type="radio" name="gender" value="M" />
-                                            Male
-                                        </label>
-                                        <label className="radio-inline mr-3">
-                                            <Field type="radio" name="gender" value="F" />
-                                            Female
-                                        </label>
-                                        <label className="radio-inline">
-                                            <Field type="radio" name="gender" value="O" />
-                                            Others
-                                        </label>
-                                        <ErrorMessage name="gender" component="div" className="text-error" />
-                                    </div>
-                                </bie.Col>
-                            </bie.Row>
-
-                            <bie.Row className="px-5 pt-2">
-                                <bie.Col xs={12} sm={12} md={12} lg={8} xl={6} xxl={6}>
-                                    <span className="text-danger">
-                                        *<b>Caste:</b>
-                                    </span>
-                                    <Field as="select" name="caste" className="form-control ml-2">
-                                        <option value="">Select Caste</option>
-                                        <option value="OC">OC</option>
-                                        <option value="BC">BC</option>
-                                        <option value="SC">SC</option>
-                                        <option value="ST">ST</option>
-                                        <option value="Others">Others</option>
-                                    </Field>
-                                    <ErrorMessage name="caste" component="div" className="text-error" />
-                                </bie.Col>
-                            </bie.Row>
-
-                            <bie.Row>
-                                <bie.Col xs={12} sm={12} md={12} lg={8} xl={2} xxl={2}>
-                                    <span className="text-danger">
-                                        *<b>Religion:</b>
-                                    </span>
-                                    <Field type="text" name="religion" className="form-control" />
-                                </bie.Col>
-                            </bie.Row>
-
-                            <bie.Row>
-                                <bie.Col xs={12} sm={12} md={12} lg={8} xl={2} xxl={2}>
-                                    <span className="text-danger">
-                                        *<b>Address:</b>
-                                    </span>
-                                    <Field type="text" name="address" className="form-control" />
-                                </bie.Col>
-                            </bie.Row>
-
-                            <bie.Row className="px-5 pt-2">
-                                <bie.Col xs={12} sm={12} md={12} lg={8} xl={6} xxl={6}>
-                                    <span className="text-danger">
-                                        *<b>SSC:</b>
-                                    </span>
-                                    <Field type="checkbox" name="qualification1" className="form-control" />
-                                </bie.Col>
-                            </bie.Row>
-
-                            <bie.Row className="px-5 pt-2">
-                                <bie.Col xs={12} sm={12} md={12} lg={8} xl={6} xxl={6}>
-                                    <span className="text-danger">
-                                        *<b>Inter:</b>
-                                    </span>
-                                    <Field type="checkbox" name="qualification2" className="form-control" />
-                                </bie.Col>
-                            </bie.Row>
-
-                            <bie.Row className="px-5 pt-2">
-                                <bie.Col xs={12} sm={12} md={12} lg={8} xl={6} xxl={6}>
-                                    <span className="text-danger">
-                                        *<b>Under Graduate:</b>
-                                    </span>
-                                    <Field type="checkbox" name="qualification3" className="form-control" />
-                                </bie.Col>
-                            </bie.Row>
-
-                            <bie.Row className="px-5 pt-2">
-                                <bie.Col xs={12} sm={12} md={12} lg={8} xl={2} xxl={2}>
-                                    <button type="submit" disabled={isSubmitting}>
-                                        Submit
-                                    </button>
-                                </bie.Col>
-                            </bie.Row>
-                        </bie.Container>
-                    </Form>
-                )}
-            </Formik>
+        <div className="registration-page">
+            <FormikProvider value={formik}>
+                <Form>
+                    <Table striped bordered hover>
+                        <caption className="caption-heading">Student Registration Form</caption>
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Father Name</th>
+                                <th>Mother Name</th>
+                                <th>Gender</th>
+                                <th>Caste</th>
+                                <th>Religion</th>
+                                <th>Address</th>
+                                <th>Qualifications</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <FieldArray name="students">
+                                {arrayHelpers => (
+                                    <>
+                                        {formik.values.students.map((student, index) => (
+                                            <tr key={index}>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        name={`students.${index}.studentName`}
+                                                        onChange={formik.handleChange}
+                                                        className="form-control"
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        name={`students.${index}.fatherName`}
+                                                        // value={student.fatherName} we should not use this as we are directly specifing the values
+                                                        // so to set the values we follow the below method
+                                                        //response.data?.map((d, i) => {
+                                                             // formik.setFieldValue("studentName", d.studentName);
+                                                           //formik.setFieldValue("fatherName", d.fatherName);
+                                                        onChange={formik.handleChange}
+                                                        className="form-control"
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        name={`students.${index}.motherName`}
+                                                        onChange={formik.handleChange}
+                                                        className="form-control"
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <select
+                                                        name={`students.${index}.gender`}
+                                                        onChange={formik.handleChange}
+                                                        className="form-control"
+                                                    >
+                                                        <option value="M">Male</option>
+                                                        <option value="F">Female</option>
+                                                        <option value="O">Others</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        name={`students.${index}.caste`}
+                                                        onChange={formik.handleChange}
+                                                        className="form-control"
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        name={`students.${index}.religion`}
+                                                        onChange={formik.handleChange}
+                                                        className="form-control"
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        name={`students.${index}.address`}
+                                                        onChange={formik.handleChange}
+                                                        className="form-control"
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <label>
+                                                        <input
+                                                            type="checkbox"
+                                                            name={`students.${index}.qualifications`}
+                                                            // value="SSC"
+                                                            checked={student.qualifications.includes('SSC')}
+                                                            onChange={formik.handleChange}
+                                                        /> SSC
+                                                    </label>
+                                                    <label>
+                                                        <input
+                                                            type="checkbox"
+                                                            name={`students.${index}.qualifications`}
+                                                            // value="INTER"
+                                                            checked={student.qualifications.includes('INTER')}
+                                                            onChange={formik.handleChange}
+                                                        /> Inter
+                                                    </label>
+                                                    <label>
+                                                        <input
+                                                            type="checkbox"
+                                                            name={`students.${index}.qualifications`}
+                                                            // value="DEGREE"
+                                                            checked={student.qualifications.includes('DEGREE')}
+                                                            onChange={formik.handleChange}
+                                                        /> Degree
+                                                    </label>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </>
+                                )}
+                            </FieldArray>
+                        </tbody>
+                    </Table>
+                    <Button type="submit" disabled={formik.isSubmitting}>
+                        Submit
+                    </Button>
+                </Form>
+            </FormikProvider>
         </div>
     );
 }
