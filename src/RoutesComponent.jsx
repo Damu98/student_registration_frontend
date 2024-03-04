@@ -2,7 +2,8 @@ import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 // import { PersistGate } from "redux-persist/integration/react";
 
-import StudentregistrationDemo from "./Demo";
+import StudentregistrationDemo from "./StudentApp";
+//import StudentList from "./StudentList";
 
 
 const RoutesComponent = () => {
@@ -10,7 +11,13 @@ const RoutesComponent = () => {
    
         <Router >
           <Routes>
-            <Route path="/studentregistrationdemo" element={<StudentregistrationDemo></StudentregistrationDemo>}></Route>
+            <Route path="/studentregistrationdemo" 
+            element={
+            <>
+            <StudentregistrationDemo></StudentregistrationDemo> 
+            </>
+            }
+            ></Route>
             
            
           </Routes>
